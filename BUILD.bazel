@@ -1,0 +1,20 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+genrule(
+    name = "make_test_text_file",
+    outs = ["test_text_file.txt"],
+    cmd = "echo 'TEST_FILE' > $@",
+)
+
+java_binary(
+    name = "binary_with_data",
+    srcs = glob(["src/**/*.java"]),
+    data = [":test_text_file.txt"],
+    env = {
+        "TEST_TEXT_FILE": "$(rlocationpath :test_text_file.txt)",
+    },
+    main_class = "com.example.BinaryWithData",
+    deps = [
+        "@bazel_tools//tools/java/runfiles",
+    ],
+)
